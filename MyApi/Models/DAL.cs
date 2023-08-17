@@ -172,6 +172,7 @@ namespace ASP_CORE_API.Models
                     Users users = new Users();
                     users.users_id = Convert.ToInt32(read["users_id"].ToString());
                     users.users_name = read["users_name"].ToString();
+                    users.users_password = read["users_password"].ToString();
                     users.users_email = read["users_email"].ToString();
                     users.users_phone = read["users_phone"].ToString();
                     users.users_verefiycode = Convert.ToInt32(read["users_verefiycode"].ToString());
@@ -205,6 +206,7 @@ namespace ASP_CORE_API.Models
             randomNumber = random.Next(10000, 99999);
 
             cmd.Parameters.AddWithValue("users_name", users.users_name); 
+            cmd.Parameters.AddWithValue("users_password", users.users_password); 
             cmd.Parameters.AddWithValue("users_email", users.users_email); 
             cmd.Parameters.AddWithValue("users_phone", users.users_phone); 
             cmd.Parameters.AddWithValue("users_verefiycode", randomNumber); 
@@ -234,19 +236,40 @@ namespace ASP_CORE_API.Models
 
         public ResponseVerfiycode Verfiycode(SqlConnection connection, ResponseVerfiycode responseVerfiycode)
         {
+
+
             ResponseVerfiycode response = new ResponseVerfiycode();
             SqlCommand cmd = new SqlCommand("spVerfiyCode", connection);
             cmd.CommandType = CommandType.StoredProcedure;
 
             randomNumber = random.Next(10000, 99999);
 
+
             cmd.Parameters.AddWithValue("users_email", responseVerfiycode.users_email);
             cmd.Parameters.AddWithValue("users_verefiycode", responseVerfiycode.users_verefiycode);
 
-            connection.Open();
-            cmd.ExecuteScalar();
 
+            connection.Open();
+            int i = Convert.ToInt32(cmd.ExecuteScalar());
+
+            if (1 > 0)
+            {
+                response.StatusCode = 200;
+                connection.Close();
+            }
+            else
+            {
+                response.StatusCode = 100;
+                connection.Close();
+            }
             return response;
+
+
+
+
+
+
+
         }
 
     }
