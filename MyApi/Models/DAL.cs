@@ -236,8 +236,6 @@ namespace ASP_CORE_API.Models
 
         public ResponseVerfiycode Verfiycode(SqlConnection connection, ResponseVerfiycode responseVerfiycode)
         {
-
-
             ResponseVerfiycode response = new ResponseVerfiycode();
             SqlCommand cmd = new SqlCommand("spVerfiyCode", connection);
             cmd.CommandType = CommandType.StoredProcedure;
