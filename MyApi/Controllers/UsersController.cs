@@ -52,5 +52,17 @@ namespace MyApi.Controllers
             response = dal.AddUsers(con, users);
             return response;
         }
+
+
+        [HttpPost]
+        [Route("Verfiycode")]
+        public void Verfiycode(string email,int verfiycode)
+        {
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("AppConn").ToString());
+      
+            DAL dal = new DAL();
+            dal.Verfiycode(con, email, verfiycode);
+
+        }
     }
 }

@@ -2,11 +2,36 @@
 using MyApi.Models;
 using System.Data;
 using System.Data.SqlClient;
+using System.Net;
+using System.Net.Mail;
 
 namespace ASP_CORE_API.Models
 {
     public class DAL
     {
+        Random random = new Random();
+        int randomNumber;
+        public void SendEmailVerfiy(string toAddress,int randomNumbers)
+        {
+            var smtpClient = new SmtpClient("smtp.gmail.com")
+            {
+                Port = 587,
+                Credentials = new NetworkCredential("hassankarim.it3@gmail.com", "vvvplifqcubdoebv"),
+                EnableSsl = true,
+            };
+            var mailMessage = new MailMessage
+            {
+                From = new MailAddress("hassankarim.it3@gmail.com"),
+                Subject = "Verfiycode App",
+                Body = "Verfiycode  " +  randomNumbers.ToString() ,
+                IsBodyHtml = true,
+            };
+            mailMessage.To.Add(toAddress);
+
+            smtpClient.Send(mailMessage);
+        }
+
+
         public Response GetAllEmployee(SqlConnection connection)
         {
             Response response = new Response();
@@ -176,11 +201,17 @@ namespace ASP_CORE_API.Models
             ResponseUsers response = new ResponseUsers();
             SqlCommand cmd = new SqlCommand("spINSERT_UsersTb", connection);
             cmd.CommandType = CommandType.StoredProcedure;
+
+            randomNumber = random.Next(10000, 99999);
+
             cmd.Parameters.AddWithValue("users_name", users.users_name); 
             cmd.Parameters.AddWithValue("users_email", users.users_email); 
             cmd.Parameters.AddWithValue("users_phone", users.users_phone); 
-            cmd.Parameters.AddWithValue("users_verefiycode", users.users_verefiycode); 
-            cmd.Parameters.AddWithValue("users_approve", users.users_approve); 
+            cmd.Parameters.AddWithValue("users_verefiycode", randomNumber); 
+            cmd.Parameters.AddWithValue("users_approve", users.users_approve);
+
+            SendEmailVerfiy(users.users_email.ToString(), randomNumber);
+
             connection.Open();
             int i = Convert.ToInt32(cmd.ExecuteScalar());
 
@@ -197,6 +228,22 @@ namespace ASP_CORE_API.Models
                 connection.Close();
             }
             return response;
+        }
+
+
+
+        public void Verfiycode(SqlConnection connection, string users_email,int users_verefiycode)
+        {
+            SqlCommand cmd = new SqlCommand("spVerfiyCode", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            randomNumber = random.Next(10000, 99999);
+
+            cmd.Parameters.AddWithValue("users_email", users_email);
+            cmd.Parameters.AddWithValue("users_verefiycode", users_verefiycode);
+
+            connection.Open();
+            cmd.ExecuteScalar();
         }
 
     }
