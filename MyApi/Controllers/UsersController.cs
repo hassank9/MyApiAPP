@@ -56,13 +56,13 @@ namespace MyApi.Controllers
 
         [HttpPost]
         [Route("Verfiycode")]
-        public void Verfiycode(string email,int verfiycode)
+        public ResponseVerfiycode Verfiycode(ResponseVerfiycode responseVerfiycode)
         {
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("AppConn").ToString());
-      
+            ResponseVerfiycode response = new ResponseVerfiycode();
             DAL dal = new DAL();
-            dal.Verfiycode(con, email, verfiycode);
-
+            response=  dal.Verfiycode(con, responseVerfiycode);
+            return response;
         }
     }
 }

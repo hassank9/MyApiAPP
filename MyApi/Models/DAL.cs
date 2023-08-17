@@ -232,18 +232,21 @@ namespace ASP_CORE_API.Models
 
 
 
-        public void Verfiycode(SqlConnection connection, string users_email,int users_verefiycode)
+        public ResponseVerfiycode Verfiycode(SqlConnection connection, ResponseVerfiycode responseVerfiycode)
         {
+            ResponseVerfiycode response = new ResponseVerfiycode();
             SqlCommand cmd = new SqlCommand("spVerfiyCode", connection);
             cmd.CommandType = CommandType.StoredProcedure;
 
             randomNumber = random.Next(10000, 99999);
 
-            cmd.Parameters.AddWithValue("users_email", users_email);
-            cmd.Parameters.AddWithValue("users_verefiycode", users_verefiycode);
+            cmd.Parameters.AddWithValue("users_email", responseVerfiycode.users_email);
+            cmd.Parameters.AddWithValue("users_verefiycode", responseVerfiycode.users_verefiycode);
 
             connection.Open();
             cmd.ExecuteScalar();
+
+            return response;
         }
 
     }
