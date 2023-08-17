@@ -252,7 +252,7 @@ namespace ASP_CORE_API.Models
             connection.Open();
             int i = Convert.ToInt32(cmd.ExecuteScalar());
 
-            if (i > 0)
+            if (i == 100)
             {
                 response.StatusCode = 200;
                 connection.Close();
