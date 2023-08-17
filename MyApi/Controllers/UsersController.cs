@@ -64,5 +64,17 @@ namespace MyApi.Controllers
             response=  dal.Verfiycode(con, responseVerfiycode);
             return response;
         }
+
+
+        [HttpPost]
+        [Route("Login")]
+        public ResponseLogin Login(ResponseLogin responseLogin)
+        {
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("AppConn").ToString());
+            ResponseLogin response = new ResponseLogin();
+            DAL dal = new DAL();
+            response = dal.Login(con, responseLogin);
+            return response;
+        }
     }
 }

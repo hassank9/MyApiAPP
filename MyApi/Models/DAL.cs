@@ -217,7 +217,7 @@ namespace ASP_CORE_API.Models
             connection.Open();
             int i = Convert.ToInt32(cmd.ExecuteScalar());
 
-            if (1 > 0)
+            if (i > 0)
             {
                 response.StatusCode = 200;
                 response.ErrorMessage = "User added.";
@@ -252,7 +252,7 @@ namespace ASP_CORE_API.Models
             connection.Open();
             int i = Convert.ToInt32(cmd.ExecuteScalar());
 
-            if (1 > 0)
+            if (i > 0)
             {
                 response.StatusCode = 200;
                 connection.Close();
@@ -263,13 +263,33 @@ namespace ASP_CORE_API.Models
                 connection.Close();
             }
             return response;
+        }
 
 
 
+        public ResponseLogin Login(SqlConnection connection, ResponseLogin responseLogin)
+        {
+            ResponseLogin response = new ResponseLogin();
+            List<Users> lstlogin= new List<Users>();
 
+            SqlCommand cmd = new SqlCommand("spLogin", connection);
+            cmd.Parameters.AddWithValue("users_email", responseLogin.email); 
+            cmd.Parameters.AddWithValue("users_password", responseLogin.password); 
+            cmd.CommandType = CommandType.StoredProcedure;
+            connection.Open();
+            int i = Convert.ToInt32(cmd.ExecuteScalar());
 
-
-
+            if (i > 0)
+            {
+                response.StatusCode = 200;
+                connection.Close();
+            }
+            else
+            {
+                response.StatusCode = 100;
+                connection.Close();
+            }
+            return response;
         }
 
     }
