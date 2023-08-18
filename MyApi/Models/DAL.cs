@@ -240,7 +240,7 @@ namespace ASP_CORE_API.Models
             SqlCommand cmd = new SqlCommand("spVerfiyCode", connection);
             cmd.CommandType = CommandType.StoredProcedure;
 
-            randomNumber = random.Next(10000, 99999);
+            
 
 
             cmd.Parameters.AddWithValue("users_email", responseVerfiycode.users_email);
@@ -278,6 +278,31 @@ namespace ASP_CORE_API.Models
             int i = Convert.ToInt32(cmd.ExecuteScalar());
 
             if (i > 0)
+            {
+                response.StatusCode = 200;
+                connection.Close();
+            }
+            else
+            {
+                response.StatusCode = 100;
+                connection.Close();
+            }
+            return response;
+        }
+
+
+        public ResponseLogin CheckEmail(SqlConnection connection, ResponseLogin responseLogin)
+        {
+            ResponseLogin response = new ResponseLogin();
+            List<Users> lstlogin = new List<Users>();
+
+            SqlCommand cmd = new SqlCommand("spLogin", connection);
+            cmd.Parameters.AddWithValue("users_email", responseLogin.email);
+            cmd.CommandType = CommandType.StoredProcedure;
+            connection.Open();
+            int i = Convert.ToInt32(cmd.ExecuteScalar());
+
+            if (i == 0)
             {
                 response.StatusCode = 200;
                 connection.Close();
