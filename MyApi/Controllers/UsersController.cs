@@ -76,5 +76,17 @@ namespace MyApi.Controllers
             response = dal.Login(con, responseLogin);
             return response;
         }
+        
+        
+        [HttpPost]
+        [Route("CheckEmail")]
+        public ResponseLogin CheckEmail(ResponseLogin responseLogin)
+        {
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("AppConn").ToString());
+            ResponseLogin response = new ResponseLogin();
+            DAL dal = new DAL();
+            response = dal.CheckEmail(con, responseLogin);
+            return response;
+        }
     }
 }

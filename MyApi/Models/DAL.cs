@@ -290,21 +290,32 @@ namespace ASP_CORE_API.Models
             return response;
         }
 
+        public void UpdateVerfiy(SqlConnection connection, string email,int verfiy)
+        {
+            SqlCommand cmd = new SqlCommand("UpdateVerfiy", connection);
+            cmd.Parameters.AddWithValue("users_email", email);
+            cmd.Parameters.AddWithValue("users_verefiycode", verfiy);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.ExecuteScalar();
+        }
+
 
         public ResponseLogin CheckEmail(SqlConnection connection, ResponseLogin responseLogin)
         {
             ResponseLogin response = new ResponseLogin();
-            List<Users> lstlogin = new List<Users>();
-
-            SqlCommand cmd = new SqlCommand("spLogin", connection);
+            SqlCommand cmd = new SqlCommand("spCheckEmail", connection);
             cmd.Parameters.AddWithValue("users_email", responseLogin.email);
             cmd.CommandType = CommandType.StoredProcedure;
             connection.Open();
             int i = Convert.ToInt32(cmd.ExecuteScalar());
 
-            if (i == 0)
+            if (i > 0)
             {
                 response.StatusCode = 200;
+                randomNumber = random.Next(10000, 99999);
+                SendEmailVerfiy(responseLogin.email.ToString(), randomNumber);
+                UpdateVerfiy(connection, responseLogin.email , randomNumber);
+
                 connection.Close();
             }
             else
