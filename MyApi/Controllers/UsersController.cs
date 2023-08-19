@@ -88,5 +88,17 @@ namespace MyApi.Controllers
             response = dal.CheckEmail(con, responseLogin);
             return response;
         }
+
+
+        [HttpPost]
+        [Route("ResetPassword")]
+        public ResponseLogin ResetPassword(ResponseLogin responseLogin)
+        {
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("AppConn").ToString());
+            ResponseLogin response = new ResponseLogin();
+            DAL dal = new DAL();
+            response = dal.ResetPassword(con, responseLogin);
+            return response;
+        }
     }
 }
