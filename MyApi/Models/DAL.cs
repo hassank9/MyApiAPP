@@ -268,16 +268,36 @@ namespace ASP_CORE_API.Models
         public ResponseLogin Login(SqlConnection connection, ResponseLogin responseLogin)
         {
             ResponseLogin response = new ResponseLogin();
-            List<Users> lstlogin= new List<Users>();
+            List<Users> lstUsers = new List<Users>();
+
 
             SqlCommand cmd = new SqlCommand("spLogin", connection);
             cmd.Parameters.AddWithValue("users_email", responseLogin.email); 
             cmd.Parameters.AddWithValue("users_password", responseLogin.password); 
             cmd.CommandType = CommandType.StoredProcedure;
             connection.Open();
-            int i = Convert.ToInt32(cmd.ExecuteScalar());
+            SqlDataReader read = cmd.ExecuteReader();
+            while (read.Read())
+            {
+                Users users = new Users();
+                users.users_id = Convert.ToInt32(read["users_id"].ToString());
+                users.users_name = read["users_name"].ToString();
+                users.users_password = read["users_password"].ToString();
+                users.users_email = read["users_email"].ToString();
+                users.users_phone = read["users_phone"].ToString();
+                users.users_verefiycode = Convert.ToInt32(read["users_verefiycode"].ToString());
+                users.users_approve = Convert.ToInt32(read["users_approve"].ToString());
+                lstUsers.Add(users);
 
-            if (i > 0)
+                if (lstUsers.Count > 0)
+                {
+                    response.id = users.users_id;
+                    response.username = users.users_name;
+                    response.email = users.users_email;
+                    response.phone = users.users_phone;
+                }
+            }
+            if (lstUsers.Count > 0)
             {
                 response.StatusCode = 200;
                 connection.Close();
