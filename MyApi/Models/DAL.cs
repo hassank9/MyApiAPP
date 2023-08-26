@@ -428,6 +428,7 @@ namespace ASP_CORE_API.Models
                 response.lstCategories = lstCategories;
                 response.lstItems = lstItems;
                 connection.Close();
+                read    .Close();
             }
             else
             {
@@ -435,6 +436,108 @@ namespace ASP_CORE_API.Models
                 response.ErrorMessage = "No Data Found";
                 response.lstCategories = null;
                 response.lstItems = null;
+                connection.Close();
+            }
+            return response;
+        }
+
+
+        public ResponseItems GetItems(SqlConnection connection, int ID)
+        {
+
+            ResponseItems response = new ResponseItems();
+            List<Items> lstItems = new List<Items>();
+
+            SqlCommand cmd1 = new SqlCommand("spSELECT_ItemsListTb", connection);
+            cmd1.CommandType = CommandType.StoredProcedure;
+            if (ID > 0) { cmd1.Parameters.AddWithValue("ID", ID); }
+            connection.Open();
+            SqlDataReader read1 = cmd1.ExecuteReader();
+            while (read1.Read())
+            {
+                Items items = new Items();
+                items.items_id = Convert.ToInt32(read1["items_id"].ToString());
+                items.items_name_en = read1["items_name_en"].ToString();
+                items.items_name_ar = read1["items_name_ar"].ToString();
+                items.items_desc_en = read1["items_desc_en"].ToString();
+                items.items_desc_ar = read1["items_desc_ar"].ToString();
+                items.items_image = read1["items_image"].ToString();
+                items.items_count = Convert.ToInt32(read1["items_count"].ToString());
+                items.items_active = Convert.ToInt32(read1["items_active"].ToString());
+                items.items_price = float.Parse(read1["items_price"].ToString());
+                items.items_discount = Convert.ToInt32(read1["items_discount"].ToString());
+                items.items_cat = Convert.ToInt32(read1["items_cat"].ToString());
+                items.categories_id = Convert.ToInt32(read1["categories_id"].ToString());
+                items.categories_name_en = read1["categories_name_en"].ToString();
+                items.categories_name_ar = read1["categories_name_ar"].ToString();
+                items.categories_image = read1["categories_image"].ToString();
+                lstItems.Add(items);
+            }
+
+
+            if (lstItems.Count > 0)
+            {
+                response.StatusCode = 200;
+                response.ErrorMessage = "Data Found";
+                response.ItemsList = lstItems;
+                connection.Close();
+            }
+            else
+            {
+                response.StatusCode = 100;
+                response.ErrorMessage = "No Data Found";
+                response.ItemsList = null;
+                connection.Close();
+            }
+            return response;
+        }
+
+
+        public ResponseItems GetItemsbyCat(SqlConnection connection, Items Ritems)
+        {
+            ResponseItems response = new ResponseItems();
+            List<Items> lstItems = new List<Items>();
+
+
+            SqlCommand cmd = new SqlCommand("spSELECT_ItemsListTb", connection);
+            cmd.Parameters.AddWithValue("ID", Ritems.items_cat);
+            cmd.CommandType = CommandType.StoredProcedure;
+            connection.Open();
+            SqlDataReader read = cmd.ExecuteReader();
+            while (read.Read())
+            {
+                Items items = new Items();
+                items.items_id = Convert.ToInt32(read["items_id"].ToString());
+                items.items_name_en = read["items_name_en"].ToString();
+                items.items_name_ar = read["items_name_ar"].ToString();
+                items.items_desc_en = read["items_desc_en"].ToString();
+                items.items_desc_ar = read["items_desc_ar"].ToString();
+                items.items_image = read["items_image"].ToString();
+                items.items_count = Convert.ToInt32(read["items_count"].ToString());
+                items.items_active = Convert.ToInt32(read["items_active"].ToString());
+                items.items_price = float.Parse(read["items_price"].ToString());
+                items.items_discount = Convert.ToInt32(read["items_discount"].ToString());
+                items.items_cat = Convert.ToInt32(read["items_cat"].ToString());
+                items.categories_id = Convert.ToInt32(read["categories_id"].ToString());
+                items.categories_name_en = read["categories_name_en"].ToString();
+                items.categories_name_ar = read["categories_name_ar"].ToString();
+                items.categories_image = read["categories_image"].ToString();
+                lstItems.Add(items);
+            }
+
+
+            if (lstItems.Count > 0)
+            {
+                response.StatusCode = 200;
+                response.ErrorMessage = "Data Found";
+                response.ItemsList = lstItems;
+                connection.Close();
+            }
+            else
+            {
+                response.StatusCode = 100;
+                response.ErrorMessage = "No Data Found";
+                response.ItemsList = null;
                 connection.Close();
             }
             return response;
