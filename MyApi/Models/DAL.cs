@@ -448,7 +448,7 @@ namespace ASP_CORE_API.Models
             ResponseItems response = new ResponseItems();
             List<Items> lstItems = new List<Items>();
 
-            SqlCommand cmd1 = new SqlCommand("spSELECT_ItemsListTb", connection);
+            SqlCommand cmd1 = new SqlCommand("spSELECT_ItemsListallTb", connection);
             cmd1.CommandType = CommandType.StoredProcedure;
             if (ID > 0) { cmd1.Parameters.AddWithValue("ID", ID); }
             connection.Open();
@@ -500,13 +500,15 @@ namespace ASP_CORE_API.Models
 
 
             SqlCommand cmd = new SqlCommand("spSELECT_ItemsListTb", connection);
-            cmd.Parameters.AddWithValue("ID", Ritems.items_cat);
+            cmd.Parameters.AddWithValue("UserId", Ritems.UserId);
+            cmd.Parameters.AddWithValue("IDcat", Ritems.items_cat);
             cmd.CommandType = CommandType.StoredProcedure;
             connection.Open();
             SqlDataReader read = cmd.ExecuteReader();
             while (read.Read())
             {
                 Items items = new Items();
+                items.UserId = 0;
                 items.items_id = Convert.ToInt32(read["items_id"].ToString());
                 items.items_name_en = read["items_name_en"].ToString();
                 items.items_name_ar = read["items_name_ar"].ToString();
@@ -522,6 +524,7 @@ namespace ASP_CORE_API.Models
                 items.categories_name_en = read["categories_name_en"].ToString();
                 items.categories_name_ar = read["categories_name_ar"].ToString();
                 items.categories_image = read["categories_image"].ToString();
+                items.favorite = Convert.ToInt32(read["favorite"].ToString());
                 lstItems.Add(items);
             }
 
