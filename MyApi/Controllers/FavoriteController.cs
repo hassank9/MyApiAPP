@@ -43,12 +43,24 @@ namespace MyApi.Controllers
 
         [HttpDelete]
         [Route("DeleteFavorite")]
-        public ResponseFavorite DeleteEmployee(Favorite favorite)
+        public ResponseFavorite DeleteFavorite(Favorite favorite)
         {
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("AppConn").ToString());
             ResponseFavorite response = new ResponseFavorite();
             DAL dal = new DAL();
             response = dal.DeleteFavorite(con, favorite);
+            return response;
+        }
+
+
+        [HttpDelete]
+        [Route("DeleteMyFavorite")]
+        public ResponseFavorite DeleteMyFavorite(Favorite favorite)
+        {
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("AppConn").ToString());
+            ResponseFavorite response = new ResponseFavorite();
+            DAL dal = new DAL();
+            response = dal.DeleteMyFavorite(con, favorite);
             return response;
         }
     }

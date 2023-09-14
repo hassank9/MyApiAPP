@@ -612,6 +612,7 @@ namespace ASP_CORE_API.Models
             while (read.Read())
             {
                 MyFavorite favorite = new MyFavorite();
+                favorite.favorite_id = Convert.ToInt32(read["favorite_id"].ToString());
                 favorite.users_id = Convert.ToInt32(read["users_id"].ToString());
                 favorite.items_id = Convert.ToInt32(read["items_id"].ToString());
                 favorite.favorite_itemsid = Convert.ToInt32(read["favorite_itemsid"].ToString());
@@ -643,6 +644,30 @@ namespace ASP_CORE_API.Models
                 response.ErrorMessage = "No Data Found";
                 response.myFavorites = null;
                 connection.Close();
+            }
+            return response;
+        }
+
+        public ResponseFavorite DeleteMyFavorite(SqlConnection connection, Favorite favorite)
+        {
+            ResponseFavorite response = new ResponseFavorite();
+            SqlCommand cmd = new SqlCommand("spDELETE_myfavorite", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("favorite_id", favorite.favorite_id);
+            connection.Open();
+            int i = cmd.ExecuteNonQuery();
+            connection.Close();
+
+            if (i > 0)
+            {
+                response.StatusCode = 200;
+                response.ErrorMessage = "Favorite deleted.";
+            }
+            else
+            {
+                response.StatusCode = 100;
+                response.ErrorMessage = "No Favorite deleted.";
             }
             return response;
         }
