@@ -508,7 +508,7 @@ namespace ASP_CORE_API.Models
             while (read.Read())
             {
                 Items items = new Items();
-                items.UserId = 0;
+                items.UserId = "0";
                 items.items_id = Convert.ToInt32(read["items_id"].ToString());
                 items.items_name_en = read["items_name_en"].ToString();
                 items.items_name_ar = read["items_name_ar"].ToString();
@@ -541,6 +541,107 @@ namespace ASP_CORE_API.Models
                 response.StatusCode = 100;
                 response.ErrorMessage = "No Data Found";
                 response.ItemsList = null;
+                connection.Close();
+            }
+            return response;
+        }
+
+
+        public ResponseFavorite AddFavorite(SqlConnection connection, Favorite favorite)
+        {
+            ResponseFavorite response = new ResponseFavorite();
+            SqlCommand cmd = new SqlCommand("spINSERT_favoriteTb", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("favorite_usersid", favorite.favorite_usersid);
+            cmd.Parameters.AddWithValue("favorite_itemsid", favorite.favorite_itemsid);
+
+            connection.Open();
+            int i = Convert.ToInt32(cmd.ExecuteScalar());
+
+            if (i > 0)
+            {
+                response.StatusCode = 200;
+                response.ErrorMessage = "User added.";
+                connection.Close();
+            }
+            else
+            {
+                response.StatusCode = 100;
+                response.ErrorMessage = "No Data inserted.";
+                connection.Close();
+            }
+            return response;
+        }
+
+        public ResponseFavorite DeleteFavorite(SqlConnection connection, Favorite favorite)
+        {
+            ResponseFavorite response = new ResponseFavorite();
+            SqlCommand cmd = new SqlCommand("spDELETE_favoriteTb", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("favorite_usersid", favorite.favorite_usersid);
+            cmd.Parameters.AddWithValue("favorite_itemsid", favorite.favorite_itemsid);
+            connection.Open();
+            int i = cmd.ExecuteNonQuery();
+            connection.Close();
+
+            if (i > 0)
+            {
+                response.StatusCode = 200;
+                response.ErrorMessage = "Favorite deleted.";
+            }
+            else
+            {
+                response.StatusCode = 100;
+                response.ErrorMessage = "No Favorite deleted.";
+            }
+            return response;
+        }
+
+
+        public ResponseMyFavorite myFavorite(SqlConnection connection, MyFavorite myFavorite)
+        {
+            ResponseMyFavorite response = new ResponseMyFavorite();
+            List<MyFavorite> lstMyFavorite = new List<MyFavorite>();
+            SqlCommand cmd = new SqlCommand("spSELECT_myfavorite", connection);
+            cmd.Parameters.AddWithValue("users_id", myFavorite.users_id);
+            cmd.CommandType = CommandType.StoredProcedure;
+            connection.Open();
+            SqlDataReader read = cmd.ExecuteReader();
+            while (read.Read())
+            {
+                MyFavorite favorite = new MyFavorite();
+                favorite.users_id = Convert.ToInt32(read["users_id"].ToString());
+                favorite.items_id = Convert.ToInt32(read["items_id"].ToString());
+                favorite.favorite_itemsid = Convert.ToInt32(read["favorite_itemsid"].ToString());
+                favorite.favorite_usersid = Convert.ToInt32(read["favorite_usersid"].ToString());
+                favorite.items_name_en = read["items_name_en"].ToString();
+                favorite.items_name_ar = read["items_name_ar"].ToString();
+                favorite.items_desc_en = read["items_desc_en"].ToString();
+                favorite.items_desc_ar = read["items_desc_ar"].ToString();
+                favorite.items_image = read["items_image"].ToString();
+                favorite.items_count = Convert.ToInt32(read["items_count"].ToString());
+                favorite.items_active = Convert.ToInt32(read["items_active"].ToString());
+                favorite.items_price = float.Parse(read["items_price"].ToString());
+                favorite.items_discount = Convert.ToInt32(read["items_discount"].ToString());
+                favorite.items_cat = Convert.ToInt32(read["items_cat"].ToString());
+                lstMyFavorite.Add(favorite);
+            }
+
+
+            if (lstMyFavorite.Count > 0)
+            {
+                response.StatusCode = 200;
+                response.ErrorMessage = "Data Found";
+                response.myFavorites = lstMyFavorite;
+                connection.Close();
+            }
+            else
+            {
+                response.StatusCode = 100;
+                response.ErrorMessage = "No Data Found";
+                response.myFavorites = null;
                 connection.Close();
             }
             return response;
