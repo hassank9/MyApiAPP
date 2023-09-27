@@ -8,5 +8,6 @@
         public String email{ get; set; }
         public String phone{ get; set; }
         public String password { get; set; }
+        public String users_approve { get; set; }
     }
 }

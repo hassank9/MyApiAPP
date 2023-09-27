@@ -232,7 +232,34 @@ namespace ASP_CORE_API.Models
             return response;
         }
 
+        public ResponseVerfiycode reSendVerfiyCode(SqlConnection connection, ResponseVerfiycode responseVerfiycode)
+        {
+            randomNumber = random.Next(10000, 99999);
 
+            ResponseVerfiycode response = new ResponseVerfiycode();
+            SqlCommand cmd = new SqlCommand("spReSeend_verefiycode", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("users_email", responseVerfiycode.users_email);
+            cmd.Parameters.AddWithValue("users_verefiycode", randomNumber);
+
+            SendEmailVerfiy(responseVerfiycode.users_email.ToString(), randomNumber);
+
+            connection.Open();
+            int i = Convert.ToInt32(cmd.ExecuteScalar());
+
+            if (i >= 0)
+            {
+                response.StatusCode = 200;
+                connection.Close();
+            }
+            else
+            {
+                response.StatusCode = 100;
+                connection.Close();
+            }
+            return response;
+        }
 
         public ResponseVerfiycode Verfiycode(SqlConnection connection, ResponseVerfiycode responseVerfiycode)
         {
@@ -295,6 +322,7 @@ namespace ASP_CORE_API.Models
                     response.username = users.users_name;
                     response.email = users.users_email;
                     response.phone = users.users_phone;
+                    response.users_approve = users.users_approve.ToString();
                 }
             }
             if (lstUsers.Count > 0)
@@ -671,6 +699,94 @@ namespace ASP_CORE_API.Models
             }
             return response;
         }
+
+        public ResponseCart AddCart(SqlConnection connection, Cart cart)
+        {
+            ResponseCart response = new ResponseCart();
+            SqlCommand cmd = new SqlCommand("spINSERT_CartTb", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("cart_usersid", cart.cart_usersid);
+            cmd.Parameters.AddWithValue("cart_itemesid", cart.cart_itemesid);
+
+            connection.Open();
+            int i = Convert.ToInt32(cmd.ExecuteScalar());
+
+            if (i > 0)
+            {
+                response.StatusCode = 200;
+                response.ErrorMessage = "User added.";
+                connection.Close();
+            }
+            else
+            {
+                response.StatusCode = 100;
+                response.ErrorMessage = "No Data inserted.";
+                connection.Close();
+            }
+            return response;
+        }
+
+        public ResponseCart DeleteCart(SqlConnection connection, Cart cart)
+        {
+            ResponseCart response = new ResponseCart();
+            SqlCommand cmd = new SqlCommand("spDELETE_CartTb", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("cart_usersid", cart.cart_usersid);
+            cmd.Parameters.AddWithValue("cart_itemesid", cart.cart_itemesid);
+            connection.Open();
+            int i = cmd.ExecuteNonQuery();
+            connection.Close();
+
+            if (i > 0)
+            {
+                response.StatusCode = 200;
+                response.ErrorMessage = "Favorite deleted.";
+            }
+            else
+            {
+                response.StatusCode = 100;
+                response.ErrorMessage = "No Favorite deleted.";
+            }
+            return response;
+        }
+
+
+        public ResponseCart CountCart(SqlConnection connection, Cart cart )
+        {
+            ResponseCart response = new ResponseCart();
+            SqlCommand cmd = new SqlCommand("spSELECT_CountCart", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            connection.Open();  
+
+            SqlParameter countParameter = new SqlParameter("@Count", SqlDbType.Int);
+            countParameter.Direction = ParameterDirection.Output;
+            cmd.Parameters.Add(countParameter);
+                
+            cmd.Parameters.AddWithValue("cart_usersid", cart.cart_usersid);
+            cmd.Parameters.AddWithValue("cart_itemesid", cart.cart_itemesid);
+
+            cmd.ExecuteNonQuery();
+
+            int count = (int)countParameter.Value;
+            response.Count = count;
+
+            if (count > 0)
+            {
+                response.StatusCode = 200;
+                response.Count = (int)countParameter.Value;
+                response.ErrorMessage = "True";
+            }
+            else
+            {
+                response.StatusCode = 100;
+                response.ErrorMessage = "Error";
+            }
+            return response;
+        }
+
 
     }
 }

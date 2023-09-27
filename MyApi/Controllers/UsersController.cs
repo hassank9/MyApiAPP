@@ -53,6 +53,17 @@ namespace MyApi.Controllers
             return response;
         }
 
+        [HttpPost]
+        [Route("reSend")]
+        public ResponseVerfiycode reSendVerfiyCode(ResponseVerfiycode responseVerfiycode)
+        {
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("AppConn").ToString());
+            ResponseVerfiycode response = new ResponseVerfiycode();
+            DAL dal = new DAL();
+            response = dal.reSendVerfiyCode(con, responseVerfiycode);
+            return response;
+        }
+
 
         [HttpPost]
         [Route("Verfiycode")]
